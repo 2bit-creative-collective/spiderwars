@@ -62,12 +62,9 @@ enum {
 		b2Vec2 gravity;
 		gravity.Set(0.0f, -10.0f);
 		
-		// Do we want to let bodies sleep?
-		// This will speed up the physics simulation
-		bool doSleep = true;
 		
 		// Construct a world object, which will hold and simulate the rigid bodies.
-		world = new b2World(gravity, doSleep);
+		world = new b2World(gravity);
 		
 		world->SetContinuousPhysics(true);
 		
@@ -76,17 +73,38 @@ enum {
 		world->SetDebugDraw(m_debugDraw);
 		
 		uint32 flags = 0;
-		flags += b2DebugDraw::e_shapeBit;
+		flags += b2Draw::e_shapeBit;
 //		flags += b2DebugDraw::e_jointBit;
 //		flags += b2DebugDraw::e_aabbBit;
 //		flags += b2DebugDraw::e_pairBit;
 //		flags += b2DebugDraw::e_centerOfMassBit;
 		m_debugDraw->SetFlags(flags);		
 		
+        CCSpriteBatchNode *batch = [CCSpriteBatchNode batchNodeWithFile:@"blocks.png" capacity:150];
+		[self addChild:batch z:0 tag:kTagBatchNode];
+        
+        
+        // +++ Add rope spritesheet to layer
+        ropeSpriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"rope.png" ];
+        [self addChild:ropeSpriteSheet];
+        
+        // +++ Add anchor body
+        
+        anchorBody = [self addNewSpriteWithCoordsPoint:ccp(screenSize.width/2, screenSize.height*0.7) Dynamic:FALSE];
+        
+        
+        
+        
+
+        
+        // +++ Init array that will hold references to all our ropes
+        vRopes = [[NSMutableArray alloc] init];
 		
-		// Define the ground body.
+		
+        
+        // Define the ground body.
 		b2BodyDef groundBodyDef;
-		groundBodyDef.position.Set(0, 0); // bottom-left corner
+		groundBodyDef.position.Set(0, screenSize.height / PTM_RATIO - 1); // top-left corner
 		
 		// Call the body factory which allocates memory for the ground body
 		// from a pool and creates the ground box shape (also from a pool).
@@ -96,31 +114,42 @@ enum {
 		// Define the ground box shape.
 		b2PolygonShape groundBox;		
 		
-		// bottom
-		groundBox.SetAsEdge(b2Vec2(0,0), b2Vec2(screenSize.width/PTM_RATIO,0));
-		groundBody->CreateFixture(&groundBox,0);
-		
-		// top
-		groundBox.SetAsEdge(b2Vec2(0,screenSize.height/PTM_RATIO), b2Vec2(screenSize.width/PTM_RATIO,screenSize.height/PTM_RATIO));
-		groundBody->CreateFixture(&groundBox,0);
-		
-		// left
-		groundBox.SetAsEdge(b2Vec2(0,screenSize.height/PTM_RATIO), b2Vec2(0,0));
-		groundBody->CreateFixture(&groundBox,0);
-		
-		// right
-		groundBox.SetAsEdge(b2Vec2(screenSize.width/PTM_RATIO,screenSize.height/PTM_RATIO), b2Vec2(screenSize.width/PTM_RATIO,0));
-		groundBody->CreateFixture(&groundBox,0);
-		
+        b2Vec2 vertices[4];
+        vertices[0] = b2Vec2(0,0);
+        vertices[1] = b2Vec2(screenSize.width / PTM_RATIO,0);
+        vertices[2] = b2Vec2(screenSize.width / PTM_RATIO,1);
+        vertices[3] = b2Vec2(0,1);
+        
+        groundBox.Set(vertices, sizeof(vertices) / sizeof(vertices[0]) );
+        groundBody->CreateFixture(&groundBox, 0);
+				
 		
 		//Set up sprite
 		
-		CCSpriteBatchNode *batch = [CCSpriteBatchNode batchNodeWithFile:@"blocks.png" capacity:150];
-		[self addChild:batch z:0 tag:kTagBatchNode];
 		
-		[self addNewSpriteWithCoords:ccp(screenSize.width/2, screenSize.height/2)];
 		
-		CCLabelTTF *label = [CCLabelTTF labelWithString:@"Tap screen" fontName:@"Marker Felt" fontSize:32];
+		/*
+        
+        //[self addNewSpriteWithCoords:ccp(screenSize.width/2, screenSize.height/2)];
+        
+        b2Body *body1 = [self addNewSpriteWithCoordsPoint:ccp(200,400) Dynamic:FALSE];
+        b2Body *body2 = [self addNewSpriteWithCoordsPoint:ccp(100,200)];
+        
+		
+        //define rope joint, params: two b2bodies, two local anchor points, length of rope
+        
+        b2RopeJointDef jd;
+        jd.bodyA=body1; //define bodies
+        jd.bodyB=body2;
+        jd.localAnchorA = b2Vec2(0,0); //define anchors
+        jd.localAnchorB = b2Vec2(0,0);
+        jd.maxLength= (body2->GetPosition() - body1->GetPosition()).Length(); //define max length of joint = current distance between bodies
+        world->CreateJoint(&jd); //create joint
+		
+        */
+        
+        
+        CCLabelTTF *label = [CCLabelTTF labelWithString:@"Tap screen" fontName:@"Marker Felt" fontSize:32];
 		[self addChild:label z:0];
 		[label setColor:ccc3(0,0,255)];
 		label.position = ccp( screenSize.width/2, screenSize.height-50);
@@ -145,10 +174,44 @@ enum {
 	glEnable(GL_TEXTURE_2D);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    
+    // +++ Update rope sprites
+    for(uint i=0;i<[vRopes count];i++) {
+        [[vRopes objectAtIndex:i] updateSprites];
+    }
 
 }
 
--(void) addNewSpriteWithCoords:(CGPoint)p
+-(b2Body *) addNewSpriteWithCoordsPoint:(CGPoint)p anchoredTo:(b2Body *)anchor
+{
+    
+    b2Body *body = [self addNewSpriteWithCoordsPoint:p];
+    
+    // +++ Create box2d joint
+    b2RopeJointDef jd;
+    jd.bodyA=anchor; //define bodies
+    jd.bodyB=body;
+    jd.localAnchorA = b2Vec2(0,0); //define anchors
+    jd.localAnchorB = b2Vec2(0,0);
+    
+    jd.maxLength= (body->GetPosition() - anchorBody->GetPosition()).Length(); //define max length of joint = current distance between bodies
+    world->CreateJoint(&jd); //create joint
+    
+    // +++ Create VRope
+    VRope *newRope = [[VRope alloc] init:anchorBody body2:body spriteSheet:ropeSpriteSheet];
+    [vRopes addObject:newRope];
+    
+    return body;
+    
+}
+
+-(b2Body *) addNewSpriteWithCoordsPoint:(CGPoint)p
+{
+    return [self addNewSpriteWithCoordsPoint:p Dynamic:TRUE];
+}
+
+
+-(b2Body *) addNewSpriteWithCoordsPoint:(CGPoint)p Dynamic:(BOOL)d
 {
 	CCLOG(@"Add sprite %0.2f x %02.f",p.x,p.y);
 	CCSpriteBatchNode *batch = (CCSpriteBatchNode*) [self getChildByTag:kTagBatchNode];
@@ -165,7 +228,8 @@ enum {
 	// Define the dynamic body.
 	//Set up a 1m squared box in the physics world
 	b2BodyDef bodyDef;
-	bodyDef.type = b2_dynamicBody;
+    if (d)
+        bodyDef.type = b2_dynamicBody;
 
 	bodyDef.position.Set(p.x/PTM_RATIO, p.y/PTM_RATIO);
 	bodyDef.userData = sprite;
@@ -181,6 +245,10 @@ enum {
 	fixtureDef.density = 1.0f;
 	fixtureDef.friction = 0.3f;
 	body->CreateFixture(&fixtureDef);
+    
+    
+    
+    return body;
 }
 
 
@@ -210,17 +278,23 @@ enum {
 			myActor.rotation = -1 * CC_RADIANS_TO_DEGREES(b->GetAngle());
 		}	
 	}
+    // +++ Update rope physics
+    for(uint i=0;i<[vRopes count];i++) {
+        [[vRopes objectAtIndex:i] update:dt];
+    }
 }
 
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-	//Add a new body/atlas sprite at the touched location
+
+    //Add a new body/atlas sprite at the touched location
 	for( UITouch *touch in touches ) {
 		CGPoint location = [touch locationInView: [touch view]];
 		
 		location = [[CCDirector sharedDirector] convertToGL: location];
 		
-		[self addNewSpriteWithCoords: location];
+        
+		[self addNewSpriteWithCoordsPoint: location anchoredTo:anchorBody];
 	}
 }
 
@@ -252,6 +326,8 @@ enum {
 	world = NULL;
 	
 	delete m_debugDraw;
+    
+    [vRopes dealloc];
 
 	// don't forget to call "super dealloc"
 	[super dealloc];
