@@ -9,6 +9,7 @@
 
 // Import the interfaces
 #import "HelloWorldLayer.h"
+#import "Playground.h"
 
 //Pixel to metres ratio. Box2D uses metres as the unit for measurement.
 //This ratio defines how many pixels correspond to 1 Box2D "metre"
@@ -60,13 +61,13 @@ enum {
 		
 		// Define the gravity vector.
 		b2Vec2 gravity;
-		gravity.Set(0.0f, -10.0f);
+		gravity.Set(0.0f, -9.8f);
 		
 		
 		// Construct a world object, which will hold and simulate the rigid bodies.
 		world = new b2World(gravity);
 		
-		world->SetContinuousPhysics(true);
+		world->SetContinuousPhysics(false);
 		
 		// Debug Draw functions
 		m_debugDraw = new GLESDebugDraw( PTM_RATIO );
@@ -74,7 +75,7 @@ enum {
 		
 		uint32 flags = 0;
 		flags += b2Draw::e_shapeBit;
-//		flags += b2DebugDraw::e_jointBit;
+		flags += b2Draw::e_jointBit;
 //		flags += b2DebugDraw::e_aabbBit;
 //		flags += b2DebugDraw::e_pairBit;
 //		flags += b2DebugDraw::e_centerOfMassBit;
@@ -88,9 +89,6 @@ enum {
         ropeSpriteSheet = [CCSpriteBatchNode batchNodeWithFile:@"rope.png" ];
         [self addChild:ropeSpriteSheet];
         
-        // +++ Add anchor body
-        
-        anchorBody = [self addNewSpriteWithCoordsPoint:ccp(screenSize.width/2, screenSize.height*0.7) Dynamic:FALSE];
         
         
         
@@ -104,24 +102,31 @@ enum {
         
         // Define the ground body.
 		b2BodyDef groundBodyDef;
-		groundBodyDef.position.Set(0, screenSize.height / PTM_RATIO - 1); // top-left corner
+		groundBodyDef.position.Set(6, 6); // top-left corner
 		
 		// Call the body factory which allocates memory for the ground body
 		// from a pool and creates the ground box shape (also from a pool).
 		// The body is also added to the world.
 		b2Body* groundBody = world->CreateBody(&groundBodyDef);
+        
+        anchorBody = groundBody;
 		
 		// Define the ground box shape.
 		b2PolygonShape groundBox;		
 		
         b2Vec2 vertices[4];
-        vertices[0] = b2Vec2(0,0);
-        vertices[1] = b2Vec2(screenSize.width / PTM_RATIO,0);
-        vertices[2] = b2Vec2(screenSize.width / PTM_RATIO,1);
-        vertices[3] = b2Vec2(0,1);
+        vertices[0] = b2Vec2(-1,-1);
+        vertices[1] = b2Vec2(1,-1);
+        vertices[2] = b2Vec2(1,1);
+        vertices[3] = b2Vec2(-1,1);
         
         groundBox.Set(vertices, sizeof(vertices) / sizeof(vertices[0]) );
-        groundBody->CreateFixture(&groundBox, 0);
+        // Define the dynamic body fixture.
+        b2FixtureDef fixtureDef;
+        fixtureDef.shape = &groundBox;	
+        fixtureDef.density = 1.0f;
+        fixtureDef.friction = 0.3f;
+        groundBody->CreateFixture(&fixtureDef);
 				
 		
 		//Set up sprite
@@ -155,8 +160,33 @@ enum {
 		label.position = ccp( screenSize.width/2, screenSize.height-50);
 		
 		[self schedule: @selector(tick:)];
+        
+        
+        CCMenuItemImage* nextSceneButton = [CCMenuItemImage itemFromNormalImage:@"Icon-72.png"
+                                           selectedImage: @"Icon-72.png"
+                                           target:self
+                                           selector:@selector(gotoNextScene)];
+
+        
+        // Create a menu and add your menu items to it
+        CCMenu * myMenu = [CCMenu menuWithItems:nextSceneButton, nil];
+        
+        // Arrange the menu items vertically
+        [myMenu alignItemsVertically];
+        [myMenu setPosition:ccp(300, 100)];
+        // add the menu to your scene
+        [self addChild:myMenu];
+        
+        
 	}
 	return self;
+}
+
+-(void) gotoNextScene
+{
+    [[CCDirector sharedDirector] replaceScene:
+	 [CCTransitionFade transitionWithDuration:0.5f scene:[Playground scene]]];
+
 }
 
 -(void) draw
@@ -185,17 +215,29 @@ enum {
 -(b2Body *) addNewSpriteWithCoordsPoint:(CGPoint)p anchoredTo:(b2Body *)anchor
 {
     
+    
+    
     b2Body *body = [self addNewSpriteWithCoordsPoint:p];
+    
+    
+    
     
     // +++ Create box2d joint
     b2RopeJointDef jd;
     jd.bodyA=anchor; //define bodies
     jd.bodyB=body;
-    jd.localAnchorA = b2Vec2(0,0); //define anchors
+    jd.localAnchorA = b2Vec2(0,0);
     jd.localAnchorB = b2Vec2(0,0);
+    jd.collideConnected = true;
+    
+
+
+    
+    
     
     jd.maxLength= (body->GetPosition() - anchorBody->GetPosition()).Length(); //define max length of joint = current distance between bodies
     world->CreateJoint(&jd); //create joint
+
     
     // +++ Create VRope
     VRope *newRope = [[VRope alloc] init:anchorBody body2:body spriteSheet:ropeSpriteSheet];
@@ -233,6 +275,8 @@ enum {
 
 	bodyDef.position.Set(p.x/PTM_RATIO, p.y/PTM_RATIO);
 	bodyDef.userData = sprite;
+    
+    
 	b2Body *body = world->CreateBody(&bodyDef);
 	
 	// Define another box shape for our dynamic body.
@@ -242,9 +286,11 @@ enum {
 	// Define the dynamic body fixture.
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &dynamicBox;	
-	fixtureDef.density = 1.0f;
-	fixtureDef.friction = 0.3f;
+	fixtureDef.density = 3000.0f;
+	fixtureDef.friction = 1.0f;
 	body->CreateFixture(&fixtureDef);
+    
+
     
     
     
