@@ -13,22 +13,132 @@
 //Box2D is optimized for objects of 1x1 metre therefore it makes sense
 //to define the ratio so that your most common object type is 1x1 metre.
 #define PTM_RATIO 32
+#define ptm(__x__) (__x__/PTM_RATIO)
+
 
 
 @implementation Playground
+
+@synthesize joints;
+@synthesize anchors;
+
 - (id)init {
     self = [super init];
     if (self) {
-        [self performSelector:@selector(setupBox2DWorld)];
-        [self performSelector:@selector(defineStickyBlocks)];
-        [self performSelector:@selector(defineSpider)];
+        self.isTouchEnabled = YES;
+        self.joints = [NSMutableArray array];
+        self.anchors = [NSMutableArray array];
+        [self setupBox2DWorld];
+        [self defineStickyBlocks];
+        [self defineSpider];
         [self schedule: @selector(tick:)];
-        //
+        
     }
     return self;
 }
 
 
+
+
+
+- (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    UITouch *touch = [touches anyObject];
+    b2Vec2 t =  [self getPointFromTouch:touch];
+
+        for (NSValue* b in [self anchors]) 
+    {
+        b2Body *temp = (b2Body *)[b pointerValue];
+        if (temp->GetFixtureList()->TestPoint(t))
+        {
+            currentRollingAnchor = temp;
+            break;
+        }
+    }
+    
+    prevTouch = t;
+    
+    
+}
+
+- (void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    if (currentRollingAnchor == Nil)
+        return;
+    
+    UITouch *touch = [touches anyObject];
+    b2Vec2 currentV = [self getPointFromTouch:touch];
+    
+    NSLog(@"-----");
+    float oppositeOverAdjacent = (currentRollingAnchor->GetPosition().y - prevTouch.y) / (currentRollingAnchor->GetPosition().x - prevTouch.x);
+    
+    NSLog(@" %f", oppositeOverAdjacent);
+
+    float angle = atan(oppositeOverAdjacent);
+    if (prevTouch.x < currentRollingAnchor->GetPosition().x)
+    {
+        angle = M_PI + angle;
+    }
+    oppositeOverAdjacent = (currentRollingAnchor->GetPosition().y - currentV.y) / 
+    (currentRollingAnchor->GetPosition().x - currentV.x);
+    
+    float angle1 = atan(oppositeOverAdjacent);
+    if (currentV.x < currentRollingAnchor->GetPosition().x)
+    {
+        angle1 = M_PI + angle1;
+    }
+    NSLog(@"current Angle %f", currentRollingAnchor->GetAngle());
+    
+    currentRollingAnchor->SetTransform(currentRollingAnchor->GetPosition(), currentRollingAnchor->GetAngle() + (angle1 -  angle));
+    
+    NSLog(@" %f", oppositeOverAdjacent);
+    NSLog(@"angle1 %f angle %f", angle1, angle);
+    
+    prevTouch = currentV;
+    
+    
+    //need to change the length of the joint!!! 
+}
+
+- (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+
+        UITouch *touch = [touches anyObject];
+        b2Vec2 t =  [self getPointFromTouch:touch];
+        [self createWebToX: t.x andY:t.y];
+        //in your touchesEnded event, you would want to see if you touched
+        //down and then up inside the same place, and do your logic there.
+    currentRollingAnchor = Nil;
+}
+
+
+-(b2Body *) createAnchorAtX: (float32)x andY:(float32)y
+{
+    b2Body *anchor;
+    b2BodyDef spiderAnchorDef;
+    
+    
+	spiderAnchorDef.position.Set(x, y);
+    
+    anchor =  world->CreateBody(&spiderAnchorDef);
+    
+    // Define another box shape for our dynamic body.
+	b2CircleShape dynamicBox1;
+    dynamicBox1.m_p = b2Vec2(0,0);
+    dynamicBox1.m_radius = 2.0f;
+//	dynamicBox1.SetAsBox(0.1f, 0.1f);//These are mid points for our 1m box
+	
+	// Define the dynamic body fixture.
+	b2FixtureDef fixtureDef1;
+	fixtureDef1.shape = &dynamicBox1;	
+	fixtureDef1.density = 1.0f;
+	fixtureDef1.friction = 0.0f;
+	anchor->CreateFixture(&fixtureDef1);
+    
+    
+	return anchor;
+    
+}
 -(void) defineSpider
 {
     // Define the dynamic body.
@@ -37,8 +147,8 @@
     
     bodyDef.type = b2_dynamicBody;
     
-	bodyDef.position.Set(100/PTM_RATIO, 100/PTM_RATIO);
-
+	bodyDef.position.Set(ptm(200), ptm(500));
+    
     
     
 	spider = world->CreateBody(&bodyDef);
@@ -50,64 +160,38 @@
 	// Define the dynamic body fixture.
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &dynamicBox;	
-	fixtureDef.density = 1.0f;
-	fixtureDef.friction = 1.0f;
+	fixtureDef.density = 5.0f;
+	fixtureDef.friction = 0.0f;
 	spider->CreateFixture(&fixtureDef);
+    spider->SetLinearDamping(0.1f);
+    
+    
+    //    // Define another box shape for our dynamic body.
+//	b2PolygonShape dynamicBox2;
+//	dynamicBox2.SetAsBox(.5f, .5f, b2Vec2(0.0f, -4.0f), 0.0f);
+//	// Define the dynamic body fixture.
+//	b2FixtureDef fixtureDef2;
+//	fixtureDef2.shape = &dynamicBox2;	
+//	fixtureDef2.density = 1.0f;
+//	fixtureDef2.friction = 0.0f;
+//    
+//	spider->CreateFixture(&fixtureDef2);
+    
     
     
     
     //anchor
-    
-    CGSize screenSize = [CCDirector sharedDirector].winSize;
-    b2BodyDef spiderAnchorDef;
-    
-    
-	spiderAnchorDef.position.Set(100/PTM_RATIO, screenSize.height / PTM_RATIO - 1.0f);
-    
-    
-    
-	spiderAnchor = world->CreateBody(&spiderAnchorDef);
-	
-	// Define another box shape for our dynamic body.
-	b2PolygonShape dynamicBox1;
-	dynamicBox1.SetAsBox(.1f, .1f);//These are mid points for our 1m box
-	
-	// Define the dynamic body fixture.
-	b2FixtureDef fixtureDef1;
-	fixtureDef1.shape = &dynamicBox1;	
-	fixtureDef1.density = 1.0f;
-	fixtureDef1.friction = 1.0f;
-	spiderAnchor->CreateFixture(&fixtureDef1);
-    
-    
-    // +++ Create box2d joint
-    b2RopeJointDef jd;
-    jd.bodyA = spiderAnchor; //define bodies
-    jd.bodyB = spider;
-    jd.localAnchorA = b2Vec2(0,0);
-    jd.localAnchorB = b2Vec2(0,0);
-    jd.collideConnected = true;
-    
-    
-    
-    
-    
-    
-    jd.maxLength= (spider->GetPosition() - spiderAnchor->GetPosition()).Length(); //define max length of joint = current distance between bodies
-    web = world->CreateJoint(&jd); //create joint
+    [self resetPlayground];
     
     
     //buttons
     CCMenuItemImage* swingSpiderButton = [CCMenuItemImage itemFromNormalImage:@"Icon-72.png"
                                                               selectedImage: @"Icon-72.png"
                                                                      target:self
-                                                                   selector:@selector(swingSpider)];
+                                                                   selector:@selector(resetPlayground)];
     
     
-    CCMenuItemImage* webButton = [CCMenuItemImage itemFromNormalImage:@"Icon-72.png"
-                                                                selectedImage: @"Icon-72.png"
-                                                                       target:self
-                                                                     selector:@selector(createWeb)];
+
     
     
     
@@ -115,7 +199,7 @@
     
     
     // Create a menu and add your menu items to it
-    CCMenu * myMenu = [CCMenu menuWithItems:swingSpiderButton, webButton, nil];
+    CCMenu * myMenu = [CCMenu menuWithItems:swingSpiderButton, nil];
     
     // Arrange the menu items vertically
     [myMenu alignItemsHorizontally];
@@ -123,34 +207,127 @@
     // add the menu to your scene
     [self addChild:myMenu];
 
+
+    
+    
+    
+    
+    // Define the ground body.
+    b2BodyDef groundBodyDef;
+    groundBodyDef.position.Set(7,4);
+
+    
+    // Call the body factory which allocates memory for the ground body
+    // from a pool and creates the ground box shape (also from a pool).
+    // The body is also added to the world.
+    b2Body *ground = world->CreateBody(&groundBodyDef);
+    
+    // Define another box shape for our dynamic body.
+	b2PolygonShape box;
+	box.SetAsBox(.5f, .5f);//These are mid points for our 1m box
+	
+	// Define the dynamic body fixture.
+	b2FixtureDef boxDef;
+	boxDef.shape = &box;	
+	boxDef.density = 1.0f;
+	boxDef.friction = 1.0f;
+    boxDef.restitution = 0.2f;
+	ground->CreateFixture(&boxDef);
+    
+    
 }
 
--(void) createWeb
+-(void) resetPlayground
 {
-    if (web != nil)
+    spider->SetTransform(b2Vec2(ptm(200), ptm(500)), 0.0f);
+    
+    CGSize screenSize = [CCDirector sharedDirector].winSize;
+    
+    b2Vec2 touch = b2Vec2(ptm(200), ptm(screenSize.height) - 1.0f);
+    
+    while ([[self joints] count] > 0)
     {
-        world->DestroyJoint(web);
-        web = nil;
-        return;
+        world->DestroyJoint((b2Joint *)[[[self joints] lastObject] pointerValue]);
+        world->DestroyBody((b2Body *)[[[self anchors] lastObject] pointerValue]);
+        [[self anchors] removeLastObject];
+        [[self joints] removeLastObject];
+    }
+
+    [self createWebToX:ptm(touch.x) andY:touch.y];
+}
+
+-(b2Vec2)getPointFromTouch:(UITouch *)touch
+{
+    
+    return [self getBox2Dpoint:[self convertTouchToNodeSpace:touch]]; 
+}
+
+-(b2Vec2)getBox2Dpoint:(CGPoint)point
+{
+    
+    return b2Vec2(ptm(point.x), ptm(point.y));
+}
+
+-(void) createWebToX: (float32)x andY:(float32)y
+{
+
+    if ([[self joints] count] == 2)
+    {
+        world->DestroyJoint((b2Joint *)[[[self joints] lastObject] pointerValue]);
+        [[self joints] removeLastObject];
+        world->DestroyBody((b2Body *)[[[self anchors] lastObject] pointerValue]);
+        [[self anchors] removeLastObject];
     }
     
-    spiderAnchor->SetTransform(b2Vec2(spider->GetWorldCenter().x, spiderAnchor->GetWorldCenter().y), spiderAnchor->GetAngle());
-    
-    // +++ Create box2d joint
-    b2RopeJointDef jd;
-    jd.bodyA = spiderAnchor; //define bodies
-    jd.bodyB = spider;
-    jd.localAnchorA = b2Vec2(0,0);
-    jd.localAnchorB = b2Vec2(0,0);
-    jd.collideConnected = true;
+    b2Body *anchor = [self createAnchorAtX:x andY:y];
     
     
     
+//    double angle = 0.0f;
+//    @try {
+//        float oppositeOverAdjacent = (spider->GetPosition().x - spiderAnchor->GetPosition().x) / 
+//        -(spider->GetPosition().y - spiderAnchor->GetPosition().y);
+//        
+//        angle = atan(oppositeOverAdjacent);
+//        
+//        
+//    }
+//    @catch (NSException *exception) {
+//        angle = 0.0f;
+//        NSLog(@"crap ");
+//    }
     
     
+    spider->SetFixedRotation(true);
+    //b2DistanceJointDef *jd = new b2DistanceJointDef();
+    b2RopeJointDef *jd = new b2RopeJointDef();
+    jd->bodyA = anchor;
+    jd->bodyB = spider;
+    jd->localAnchorA = b2Vec2(0,0);
+    jd->localAnchorB = b2Vec2(0,.5f);
+//    jd->Initialize(anchor, spider, anchor->GetWorldCenter(), 
+//                   spider->GetWorldPoint(b2Vec2(spider->GetLocalCenter().x, spider->GetLocalCenter().y + .5f)));
+//    jd->frequencyHz = 4.0f;
+//    jd->dampingRatio = 0.9f;
+    jd->maxLength= (spider->GetPosition() - anchor->GetPosition()).Length(); //define max length of joint = current distance between bodies
+
+    b2Joint *web = world->CreateJoint(jd);
+    [[self joints] insertObject:[NSValue valueWithPointer:web] atIndex:0];
+    [[self anchors] insertObject:[NSValue valueWithPointer:anchor] atIndex:0];
     
-    jd.maxLength= (spider->GetPosition() - spiderAnchor->GetPosition()).Length(); //define max length of joint = current distance between bodies
-    web = world->CreateJoint(&jd); //create joint
+    
+//    web->SetFrequency(20.0f);
+//    web->SetDampingRatio(1.0f);
+    
+    
+//    web->SetDampingRatio(10.0f);
+    
+//    b2RevoluteJointDef *fjd = new b2RevoluteJointDef();
+//    fjd->Initialize(spiderAnchor, spider, spiderAnchor->GetWorldCenter());
+//    fjd->enableMotor = true;
+//    fjd->motorSpeed = 0.0f;
+//    fjd->maxMotorTorque = 1.0f;
+//    world->CreateJoint(fjd);
     
     
 }
@@ -159,15 +336,21 @@
 -(void) swingSpider
 {
 
-    spider->ApplyForceToCenter(b2Vec2(50,0));
     
+    
+    short direction = 1;
+    if (spider->GetLinearVelocity().x < 0)
+          direction = -1;
+    spider->ApplyForceToCenter(b2Vec2(20 * direction,0));
+    
+
 }
 
 -(void) setupBox2DWorld
 {
     // Define the gravity vector.
     b2Vec2 gravity;
-    gravity.Set(0.0f, -9.8f);
+    gravity.Set(0.0f, -50.8f);
     
     
     // Construct a world object, which will hold and simulate the rigid bodies.
@@ -196,7 +379,7 @@
     
     // Define the ground body.
     b2BodyDef groundBodyDef;
-    groundBodyDef.position.Set(screenSize.width / PTM_RATIO * .5f,screenSize.height / PTM_RATIO - .5f); // top-left corner
+    groundBodyDef.position.Set(ptm(screenSize.width) * .5f, ptm(screenSize.height) - .5f); // top-left corner
     
     // Call the body factory which allocates memory for the ground body
     // from a pool and creates the ground box shape (also from a pool).
@@ -207,10 +390,10 @@
     b2PolygonShape groundBox;		
     
     b2Vec2 vertices[4];
-    vertices[0] = b2Vec2(-screenSize.width / PTM_RATIO * .5f, -.5f);
-    vertices[1] = b2Vec2(screenSize.width / PTM_RATIO * .5f,-.5f);
-    vertices[2] = b2Vec2(screenSize.width / PTM_RATIO * .5f,.5f);
-    vertices[3] = b2Vec2(-screenSize.width / PTM_RATIO * .5f,.5f);
+    vertices[0] = b2Vec2(-ptm(screenSize.width) * .5f, -.5f);
+    vertices[1] = b2Vec2(ptm(screenSize.width) * .5f,-.5f);
+    vertices[2] = b2Vec2(ptm(screenSize.width) * .5f,.5f);
+    vertices[3] = b2Vec2(-ptm(screenSize.width) * .5f,.5f);
     
     groundBox.Set(vertices, sizeof(vertices) / sizeof(vertices[0]) );
     // Define the dynamic body fixture.
@@ -237,6 +420,8 @@
 	// Instruct the world to perform a single step of simulation. It is
 	// generally best to keep the time step and iterations fixed.
 	world->Step(dt, velocityIterations, positionIterations);
+    
+    
     
 }
 
@@ -272,5 +457,13 @@
 	
 	// return the scene
 	return scene;
+}
+
+- (void)dealloc {
+    
+    delete world;
+    world = NULL;
+
+    [super dealloc];
 }
 @end

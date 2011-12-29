@@ -174,6 +174,7 @@
 		943BCD59146C82300084CD9D /* VStick.m in Sources */ = {isa = PBXBuildFile; fileRef = 943BCD56146C82300084CD9D /* VStick.m */; };
 		943BCD5B146C82D10084CD9D /* rope.png in Resources */ = {isa = PBXBuildFile; fileRef = 943BCD5A146C82D10084CD9D /* rope.png */; };
 		94750DA1147013E700B5A66B /* Playground.mm in Sources */ = {isa = PBXBuildFile; fileRef = 94750DA0147013E700B5A66B /* Playground.mm */; };
+		94A08F2914AC7EB00052D560 /* SpiderWebRope.mm in Sources */ = {isa = PBXBuildFile; fileRef = 94A08F2814AC7EB00052D560 /* SpiderWebRope.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -514,8 +515,11 @@
 		943BCD55146C82300084CD9D /* VStick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VStick.h; sourceTree = "<group>"; };
 		943BCD56146C82300084CD9D /* VStick.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VStick.m; sourceTree = "<group>"; };
 		943BCD5A146C82D10084CD9D /* rope.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = rope.png; path = Resources/rope.png; sourceTree = "<group>"; };
-		94750D9F147013E700B5A66B /* Playground.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Playground.h; sourceTree = "<group>"; };
+		94750D9F147013E700B5A66B /* Playground.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; path = Playground.h; sourceTree = "<group>"; };
 		94750DA0147013E700B5A66B /* Playground.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Playground.mm; sourceTree = "<group>"; };
+		94A08F2614AC78900052D560 /* SpiderWeb.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = SpiderWeb.h; path = spiderweb/SpiderWeb.h; sourceTree = "<group>"; };
+		94A08F2714AC7EB00052D560 /* SpiderWebRope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpiderWebRope.h; path = spiderweb/SpiderWebRope.h; sourceTree = "<group>"; };
+		94A08F2814AC7EB00052D560 /* SpiderWebRope.mm */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = SpiderWebRope.mm; path = spiderweb/SpiderWebRope.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -572,6 +576,7 @@
 		943BCA57146C7F1B0084CD9D /* SpiderWars */ = {
 			isa = PBXGroup;
 			children = (
+				94A08F2414AC780C0052D560 /* spiderweb */,
 				943BCC1C146C7F1F0084CD9D /* AppDelegate.h */,
 				943BCC1D146C7F1F0084CD9D /* AppDelegate.mm */,
 				943BCC1F146C7F1F0084CD9D /* RootViewController.h */,
@@ -1092,6 +1097,16 @@
 			path = libs/vrope;
 			sourceTree = "<group>";
 		};
+		94A08F2414AC780C0052D560 /* spiderweb */ = {
+			isa = PBXGroup;
+			children = (
+				94A08F2614AC78900052D560 /* SpiderWeb.h */,
+				94A08F2714AC7EB00052D560 /* SpiderWebRope.h */,
+				94A08F2814AC7EB00052D560 /* SpiderWebRope.mm */,
+			);
+			name = spiderweb;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1311,6 +1326,7 @@
 				943BCD58146C82300084CD9D /* VRope.mm in Sources */,
 				943BCD59146C82300084CD9D /* VStick.m in Sources */,
 				94750DA1147013E700B5A66B /* Playground.mm in Sources */,
+				94A08F2914AC7EB00052D560 /* SpiderWebRope.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1363,8 +1379,10 @@
 				GCC_PREFIX_HEADER = SpiderWars/Prefix.pch;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = SpiderWars/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				OTHER_LDFLAGS = "-lz";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "\"SpiderWars/libs\"";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1379,8 +1397,10 @@
 				GCC_PREFIX_HEADER = SpiderWars/Prefix.pch;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = SpiderWars/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				OTHER_LDFLAGS = "-lz";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "\"SpiderWars/libs\"";
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;

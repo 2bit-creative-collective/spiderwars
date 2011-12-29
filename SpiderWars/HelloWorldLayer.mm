@@ -102,7 +102,7 @@ enum {
         
         // Define the ground body.
 		b2BodyDef groundBodyDef;
-		groundBodyDef.position.Set(6, 6); // top-left corner
+		groundBodyDef.position.Set(20, 20); // top-left corner
 		
 		// Call the body factory which allocates memory for the ground body
 		// from a pool and creates the ground box shape (also from a pool).
@@ -235,7 +235,7 @@ enum {
     
     
     
-    jd.maxLength= (body->GetPosition() - anchorBody->GetPosition()).Length(); //define max length of joint = current distance between bodies
+    jd.maxLength= (body->GetPosition() - anchorBody->GetPosition()).Length() + 1; //define max length of joint = current distance between bodies
     world->CreateJoint(&jd); //create joint
 
     
