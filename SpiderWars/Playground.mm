@@ -7,6 +7,9 @@
 //
 
 #import "Playground.h"
+#import "SpiderWebDistance.h"
+#import "SpiderWebRope.h"
+#import "MultiNodeDistanceRope.h"
 
 //Pixel to metres ratio. Box2D uses metres as the unit for measurement.
 //This ratio defines how many pixels correspond to 1 Box2D "metre"
@@ -21,13 +24,15 @@
 
 @synthesize joints;
 @synthesize anchors;
+@synthesize webs;
 
 - (id)init {
     self = [super init];
     if (self) {
         self.isTouchEnabled = YES;
-        self.joints = [NSMutableArray array];
-        self.anchors = [NSMutableArray array];
+        [self setJoints:[NSMutableArray array]];
+        [self setAnchors:[NSMutableArray array]];        
+        [self setWebs:[NSMutableArray array]];
         [self setupBox2DWorld];
         [self defineStickyBlocks];
         [self defineSpider];
@@ -46,16 +51,16 @@
     UITouch *touch = [touches anyObject];
     b2Vec2 t =  [self getPointFromTouch:touch];
 
-        for (NSValue* b in [self anchors]) 
-    {
-        b2Body *temp = (b2Body *)[b pointerValue];
-        if (temp->GetFixtureList()->TestPoint(t))
-        {
-            currentRollingAnchor = temp;
-            break;
-        }
-    }
-    
+//    for (NSValue* b in [self anchors]) 
+//    {
+//        b2Body *temp = (b2Body *)[b pointerValue];
+//        if (temp->GetFixtureList()->TestPoint(t))
+//        {
+//            currentRollingAnchor = temp;
+//            break;
+//        }
+//    }
+
     prevTouch = t;
     
     
@@ -112,33 +117,6 @@
 }
 
 
--(b2Body *) createAnchorAtX: (float32)x andY:(float32)y
-{
-    b2Body *anchor;
-    b2BodyDef spiderAnchorDef;
-    
-    
-	spiderAnchorDef.position.Set(x, y);
-    
-    anchor =  world->CreateBody(&spiderAnchorDef);
-    
-    // Define another box shape for our dynamic body.
-	b2CircleShape dynamicBox1;
-    dynamicBox1.m_p = b2Vec2(0,0);
-    dynamicBox1.m_radius = 2.0f;
-//	dynamicBox1.SetAsBox(0.1f, 0.1f);//These are mid points for our 1m box
-	
-	// Define the dynamic body fixture.
-	b2FixtureDef fixtureDef1;
-	fixtureDef1.shape = &dynamicBox1;	
-	fixtureDef1.density = 1.0f;
-	fixtureDef1.friction = 0.0f;
-	anchor->CreateFixture(&fixtureDef1);
-    
-    
-	return anchor;
-    
-}
 -(void) defineSpider
 {
     // Define the dynamic body.
@@ -153,14 +131,16 @@
     
 	spider = world->CreateBody(&bodyDef);
 	
-	// Define another box shape for our dynamic body.
-	b2PolygonShape dynamicBox;
-	dynamicBox.SetAsBox(.5f, .5f);//These are mid points for our 1m box
+    
+    b2CircleShape circleAnchor;
+    circleAnchor.m_p = b2Vec2(0,0);
+    circleAnchor.m_radius = 0.5f;
+
 	
 	// Define the dynamic body fixture.
 	b2FixtureDef fixtureDef;
-	fixtureDef.shape = &dynamicBox;	
-	fixtureDef.density = 5.0f;
+	fixtureDef.shape = &circleAnchor;	
+	fixtureDef.density = 2.0f;
 	fixtureDef.friction = 0.0f;
 	spider->CreateFixture(&fixtureDef);
     spider->SetLinearDamping(0.1f);
@@ -243,14 +223,11 @@
     
     CGSize screenSize = [CCDirector sharedDirector].winSize;
     
-    b2Vec2 touch = b2Vec2(ptm(200), ptm(screenSize.height) - 1.0f);
+    b2Vec2 touch = b2Vec2(ptm(400), ptm(screenSize.height) - 1.0f);
     
-    while ([[self joints] count] > 0)
+    while ([[self webs] count] > 0)
     {
-        world->DestroyJoint((b2Joint *)[[[self joints] lastObject] pointerValue]);
-        world->DestroyBody((b2Body *)[[[self anchors] lastObject] pointerValue]);
-        [[self anchors] removeLastObject];
-        [[self joints] removeLastObject];
+        [[self webs] removeLastObject];
     }
 
     [self createWebToX:ptm(touch.x) andY:touch.y];
@@ -271,16 +248,20 @@
 -(void) createWebToX: (float32)x andY:(float32)y
 {
 
-    if ([[self joints] count] == 2)
+//    if ([[self joints] count] == 2)
+//    {
+//        world->DestroyJoint((b2Joint *)[[[self joints] lastObject] pointerValue]);
+//        [[self joints] removeLastObject];
+//        world->DestroyBody((b2Body *)[[[self anchors] lastObject] pointerValue]);
+//        
+//        [[self anchors] removeLastObject];
+//        
+//    }
+    if ([[self webs] count] == 2)
     {
-        world->DestroyJoint((b2Joint *)[[[self joints] lastObject] pointerValue]);
-        [[self joints] removeLastObject];
-        world->DestroyBody((b2Body *)[[[self anchors] lastObject] pointerValue]);
-        [[self anchors] removeLastObject];
+        [[self webs] removeLastObject];
     }
-    
-    b2Body *anchor = [self createAnchorAtX:x andY:y];
-    
+        
     
     
 //    double angle = 0.0f;
@@ -299,22 +280,14 @@
     
     
     spider->SetFixedRotation(true);
-    //b2DistanceJointDef *jd = new b2DistanceJointDef();
-    b2RopeJointDef *jd = new b2RopeJointDef();
-    jd->bodyA = anchor;
-    jd->bodyB = spider;
-    jd->localAnchorA = b2Vec2(0,0);
-    jd->localAnchorB = b2Vec2(0,.5f);
-//    jd->Initialize(anchor, spider, anchor->GetWorldCenter(), 
-//                   spider->GetWorldPoint(b2Vec2(spider->GetLocalCenter().x, spider->GetLocalCenter().y + .5f)));
-//    jd->frequencyHz = 4.0f;
-//    jd->dampingRatio = 0.9f;
-    jd->maxLength= (spider->GetPosition() - anchor->GetPosition()).Length(); //define max length of joint = current distance between bodies
-
-    b2Joint *web = world->CreateJoint(jd);
-    [[self joints] insertObject:[NSValue valueWithPointer:web] atIndex:0];
-    [[self anchors] insertObject:[NSValue valueWithPointer:anchor] atIndex:0];
     
+    id<SpiderWeb> web = [MultiNodeDistanceRope createWebWithAnchorAt:b2Vec2(x, y) andAnchoredBody:spider inWorld:world];
+    
+       
+//    [[self joints] insertObject:[NSValue valueWithPointer:web] atIndex:0];
+//    [[self anchors] insertObject:[NSValue valueWithPointer:anchor] atIndex:0];
+
+    [[self webs] insertObject:web atIndex:0];
     
 //    web->SetFrequency(20.0f);
 //    web->SetDampingRatio(1.0f);
@@ -463,7 +436,9 @@
     
     delete world;
     world = NULL;
-
+    [self setWebs:Nil];
+    [self setJoints:Nil];
+    [self setAnchors:Nil]; 
     [super dealloc];
 }
 @end

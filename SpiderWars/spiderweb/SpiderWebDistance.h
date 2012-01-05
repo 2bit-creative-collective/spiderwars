@@ -1,5 +1,5 @@
 //
-//  SpiderWebRope.h
+//  SpiderWebDistance.h
 //  SpiderWars
 //
 //  Created by Simone Vicentini on 29/12/2011.
@@ -7,15 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SpiderWeb.h"
-#import "Box2D.h"
+#include "SpiderWeb.h"
+#include "Box2D.h"
 
-@interface SpiderWebRope : NSObject <SpiderWeb>
+@interface SpiderWebDistance : NSObject <SpiderWeb>
 {
     @private
     b2World *world;
     b2Body *webAnchor;
-    
 }
 
 @property (nonatomic)b2Joint * joint;
@@ -27,7 +26,5 @@
 -(b2Body *) createAnchorAt: (const b2Vec2&) anchorPoint;
 
 -(void) dealloc;
-
-
 
 @end

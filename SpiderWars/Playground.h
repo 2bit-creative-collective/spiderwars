@@ -25,6 +25,7 @@
 }
 @property (nonatomic, retain) NSMutableArray *joints;
 @property (nonatomic, retain) NSMutableArray *anchors;
+@property (nonatomic, retain) NSMutableArray *webs;
 
 -(void) defineSpider;
 -(void) setupBox2DWorld;
@@ -33,7 +34,6 @@
 - (void)ccTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event;
 - (void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event;
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event;
--(b2Body *) createAnchorAtX: (float32)x andY:(float32)y;
 -(b2Vec2)getBox2Dpoint:(CGPoint)point;
 -(b2Vec2)getPointFromTouch:(UITouch *)touch;
 -(void) resetPlayground;

@@ -1,15 +1,15 @@
 //
-//  SpiderWebRope.m
+//  SpiderWebDistance.m
 //  SpiderWars
 //
 //  Created by Simone Vicentini on 29/12/2011.
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#import "SpiderWebRope.h"
+#import "SpiderWebDistance.h"
 
-@implementation SpiderWebRope
 
+@implementation SpiderWebDistance 
 @synthesize joint;
 
 +(id) createWebWithAnchorAt:(const b2Vec2&)anchorPoint andAnchoredBody:(b2Body *)body inWorld:(b2World *) world
@@ -25,16 +25,20 @@
     {
         self->world = myWorld;
         
-        webAnchor = [self createAnchorAt:anchorPoint];
-        b2RopeJointDef *jd = new b2RopeJointDef();
-        jd->bodyA = webAnchor;
-        jd->bodyB = body;
-        jd->localAnchorA = b2Vec2(0,0);
-        jd->localAnchorB = b2Vec2(0,.5f);
-
-        jd->maxLength= (body->GetPosition() - webAnchor->GetPosition()).Length(); //define max length of joint = current distance between bodies
+        self->webAnchor = [self createAnchorAt:anchorPoint];
         
-        joint = world->CreateJoint(jd);
+//        b2RevoluteJointDef *rj = new b2RevoluteJointDef();
+//        rj->Initialize(webAnchor, body, webAnchor->GetWorldCenter());
+//        self->world->CreateJoint(rj);
+        
+        b2DistanceJointDef *jd = new b2DistanceJointDef();
+        
+        jd->Initialize(webAnchor, body, webAnchor->GetWorldCenter(), 
+                           body->GetWorldPoint(b2Vec2(body->GetLocalCenter().x, body->GetLocalCenter().y + .5f)));
+        jd->frequencyHz = 1.0f;
+        jd->dampingRatio = 4.0f;
+        
+        joint = self->world->CreateJoint(jd);
         
     }
     return self;
@@ -49,7 +53,7 @@
 	spiderAnchorDef.position = anchorPoint;
     
     
-    anchor =  world->CreateBody(&spiderAnchorDef);
+    anchor =  self->world->CreateBody(&spiderAnchorDef);
     
     // Define another box shape for our dynamic body.
 	b2CircleShape circleAnchor;
@@ -64,20 +68,16 @@
 	anchor->CreateFixture(&fixtureDef1);
     
     
-    
-    
-    
-    
 	return anchor;
     
 }
 
 -(void) dealloc
 {
-    world->DestroyJoint(joint);
-    world->DestroyBody(webAnchor);
+//    self->world->DestroyJoint(joint);
+    self->world->DestroyBody(webAnchor);
     joint = NULL;
-    webAnchor = NULL;
+    self->webAnchor = NULL;
     [super dealloc];
 }
 
