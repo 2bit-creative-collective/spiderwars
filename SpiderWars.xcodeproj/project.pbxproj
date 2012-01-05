@@ -174,7 +174,15 @@
 		943BCD59146C82300084CD9D /* VStick.m in Sources */ = {isa = PBXBuildFile; fileRef = 943BCD56146C82300084CD9D /* VStick.m */; };
 		943BCD5B146C82D10084CD9D /* rope.png in Resources */ = {isa = PBXBuildFile; fileRef = 943BCD5A146C82D10084CD9D /* rope.png */; };
 		94750DA1147013E700B5A66B /* Playground.mm in Sources */ = {isa = PBXBuildFile; fileRef = 94750DA0147013E700B5A66B /* Playground.mm */; };
+		9476537514B4631B00582792 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9476537414B4631B00582792 /* SenTestingKit.framework */; };
+		9476537614B4631B00582792 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 943BCA51146C7F1B0084CD9D /* UIKit.framework */; };
+		9476537714B4631B00582792 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 943BCA53146C7F1B0084CD9D /* Foundation.framework */; };
+		9476537D14B4631C00582792 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9476537B14B4631B00582792 /* InfoPlist.strings */; };
+		9476538014B4631C00582792 /* SpiderWarsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9476537F14B4631C00582792 /* SpiderWarsTests.m */; };
+		9476539A14B46B3A00582792 /* NodeTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9476539914B46B3A00582792 /* NodeTest.mm */; };
+		9493FC0914B1050E0097C838 /* MultiNodeDistanceRope.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9493FC0814B1050E0097C838 /* MultiNodeDistanceRope.mm */; };
 		94A08F2914AC7EB00052D560 /* SpiderWebRope.mm in Sources */ = {isa = PBXBuildFile; fileRef = 94A08F2814AC7EB00052D560 /* SpiderWebRope.mm */; };
+		94A08F2C14AD19AB0052D560 /* SpiderWebDistance.mm in Sources */ = {isa = PBXBuildFile; fileRef = 94A08F2B14AD19AB0052D560 /* SpiderWebDistance.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -515,11 +523,24 @@
 		943BCD55146C82300084CD9D /* VStick.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VStick.h; sourceTree = "<group>"; };
 		943BCD56146C82300084CD9D /* VStick.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VStick.m; sourceTree = "<group>"; };
 		943BCD5A146C82D10084CD9D /* rope.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = rope.png; path = Resources/rope.png; sourceTree = "<group>"; };
-		94750D9F147013E700B5A66B /* Playground.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; path = Playground.h; sourceTree = "<group>"; };
+		94750D9F147013E700B5A66B /* Playground.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Playground.h; sourceTree = "<group>"; };
 		94750DA0147013E700B5A66B /* Playground.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Playground.mm; sourceTree = "<group>"; };
+		9476537314B4631B00582792 /* SpiderWarsTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SpiderWarsTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9476537414B4631B00582792 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		9476537A14B4631B00582792 /* SpiderWarsTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "SpiderWarsTests-Info.plist"; sourceTree = "<group>"; };
+		9476537C14B4631C00582792 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		9476537E14B4631C00582792 /* SpiderWarsTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SpiderWarsTests.h; sourceTree = "<group>"; };
+		9476537F14B4631C00582792 /* SpiderWarsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SpiderWarsTests.m; sourceTree = "<group>"; };
+		9476538114B4631C00582792 /* SpiderWarsTests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SpiderWarsTests-Prefix.pch"; sourceTree = "<group>"; };
+		9476539814B46B3A00582792 /* NodeTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTest.h; sourceTree = "<group>"; };
+		9476539914B46B3A00582792 /* NodeTest.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NodeTest.mm; sourceTree = "<group>"; };
+		9493FC0714B1050E0097C838 /* MultiNodeDistanceRope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MultiNodeDistanceRope.h; path = spiderweb/MultiNodeDistanceRope.h; sourceTree = "<group>"; };
+		9493FC0814B1050E0097C838 /* MultiNodeDistanceRope.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = MultiNodeDistanceRope.mm; path = spiderweb/MultiNodeDistanceRope.mm; sourceTree = "<group>"; };
 		94A08F2614AC78900052D560 /* SpiderWeb.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = SpiderWeb.h; path = spiderweb/SpiderWeb.h; sourceTree = "<group>"; };
 		94A08F2714AC7EB00052D560 /* SpiderWebRope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpiderWebRope.h; path = spiderweb/SpiderWebRope.h; sourceTree = "<group>"; };
 		94A08F2814AC7EB00052D560 /* SpiderWebRope.mm */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = SpiderWebRope.mm; path = spiderweb/SpiderWebRope.mm; sourceTree = "<group>"; };
+		94A08F2A14AD19AB0052D560 /* SpiderWebDistance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpiderWebDistance.h; path = spiderweb/SpiderWebDistance.h; sourceTree = "<group>"; };
+		94A08F2B14AD19AB0052D560 /* SpiderWebDistance.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = SpiderWebDistance.mm; path = spiderweb/SpiderWebDistance.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -538,6 +559,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9476536F14B4631B00582792 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9476537514B4631B00582792 /* SenTestingKit.framework in Frameworks */,
+				9476537614B4631B00582792 /* UIKit.framework in Frameworks */,
+				9476537714B4631B00582792 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -545,6 +576,7 @@
 			isa = PBXGroup;
 			children = (
 				943BCA57146C7F1B0084CD9D /* SpiderWars */,
+				9476537814B4631B00582792 /* SpiderWarsTests */,
 				943BCA46146C7F1B0084CD9D /* Frameworks */,
 				943BCA44146C7F1B0084CD9D /* Products */,
 			);
@@ -554,6 +586,7 @@
 			isa = PBXGroup;
 			children = (
 				943BCA43146C7F1B0084CD9D /* SpiderWars.app */,
+				9476537314B4631B00582792 /* SpiderWarsTests.octest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -569,6 +602,7 @@
 				943BCA51146C7F1B0084CD9D /* UIKit.framework */,
 				943BCA53146C7F1B0084CD9D /* Foundation.framework */,
 				943BCA55146C7F1B0084CD9D /* CoreGraphics.framework */,
+				9476537414B4631B00582792 /* SenTestingKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1097,12 +1131,38 @@
 			path = libs/vrope;
 			sourceTree = "<group>";
 		};
+		9476537814B4631B00582792 /* SpiderWarsTests */ = {
+			isa = PBXGroup;
+			children = (
+				9476537E14B4631C00582792 /* SpiderWarsTests.h */,
+				9476537F14B4631C00582792 /* SpiderWarsTests.m */,
+				9476537914B4631B00582792 /* Supporting Files */,
+				9476539814B46B3A00582792 /* NodeTest.h */,
+				9476539914B46B3A00582792 /* NodeTest.mm */,
+			);
+			path = SpiderWarsTests;
+			sourceTree = "<group>";
+		};
+		9476537914B4631B00582792 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				9476537A14B4631B00582792 /* SpiderWarsTests-Info.plist */,
+				9476537B14B4631B00582792 /* InfoPlist.strings */,
+				9476538114B4631C00582792 /* SpiderWarsTests-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		94A08F2414AC780C0052D560 /* spiderweb */ = {
 			isa = PBXGroup;
 			children = (
 				94A08F2614AC78900052D560 /* SpiderWeb.h */,
 				94A08F2714AC7EB00052D560 /* SpiderWebRope.h */,
 				94A08F2814AC7EB00052D560 /* SpiderWebRope.mm */,
+				94A08F2A14AD19AB0052D560 /* SpiderWebDistance.h */,
+				94A08F2B14AD19AB0052D560 /* SpiderWebDistance.mm */,
+				9493FC0714B1050E0097C838 /* MultiNodeDistanceRope.h */,
+				9493FC0814B1050E0097C838 /* MultiNodeDistanceRope.mm */,
 			);
 			name = spiderweb;
 			sourceTree = "<group>";
@@ -1127,6 +1187,24 @@
 			productReference = 943BCA43146C7F1B0084CD9D /* SpiderWars.app */;
 			productType = "com.apple.product-type.application";
 		};
+		9476537214B4631B00582792 /* SpiderWarsTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9476538214B4631C00582792 /* Build configuration list for PBXNativeTarget "SpiderWarsTests" */;
+			buildPhases = (
+				9476536E14B4631B00582792 /* Sources */,
+				9476536F14B4631B00582792 /* Frameworks */,
+				9476537014B4631B00582792 /* Resources */,
+				9476537114B4631B00582792 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SpiderWarsTests;
+			productName = SpiderWarsTests;
+			productReference = 9476537314B4631B00582792 /* SpiderWarsTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1148,6 +1226,7 @@
 			projectRoot = "";
 			targets = (
 				943BCA42146C7F1B0084CD9D /* SpiderWars */,
+				9476537214B4631B00582792 /* SpiderWarsTests */,
 			);
 		};
 /* End PBXProject section */
@@ -1171,7 +1250,31 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9476537014B4631B00582792 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9476537D14B4631C00582792 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		9476537114B4631B00582792 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		943BCA3F146C7F1B0084CD9D /* Sources */ = {
@@ -1327,10 +1430,32 @@
 				943BCD59146C82300084CD9D /* VStick.m in Sources */,
 				94750DA1147013E700B5A66B /* Playground.mm in Sources */,
 				94A08F2914AC7EB00052D560 /* SpiderWebRope.mm in Sources */,
+				94A08F2C14AD19AB0052D560 /* SpiderWebDistance.mm in Sources */,
+				9493FC0914B1050E0097C838 /* MultiNodeDistanceRope.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9476536E14B4631B00582792 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9476538014B4631C00582792 /* SpiderWarsTests.m in Sources */,
+				9476539A14B46B3A00582792 /* NodeTest.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		9476537B14B4631B00582792 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9476537C14B4631C00582792 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		943BCC2B146C7F200084CD9D /* Debug */ = {
@@ -1407,6 +1532,50 @@
 			};
 			name = Release;
 		};
+		9476538314B4631C00582792 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SpiderWarsTests/SpiderWarsTests-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				INFOPLIST_FILE = "SpiderWarsTests/SpiderWarsTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		9476538414B4631C00582792 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SpiderWarsTests/SpiderWarsTests-Prefix.pch";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				INFOPLIST_FILE = "SpiderWarsTests/SpiderWarsTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALIDATE_PRODUCT = YES;
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1424,6 +1593,15 @@
 			buildConfigurations = (
 				943BCC2E146C7F200084CD9D /* Debug */,
 				943BCC2F146C7F200084CD9D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9476538214B4631C00582792 /* Build configuration list for PBXNativeTarget "SpiderWarsTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9476538314B4631C00582792 /* Debug */,
+				9476538414B4631C00582792 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
