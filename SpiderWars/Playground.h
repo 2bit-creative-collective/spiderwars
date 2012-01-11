@@ -22,6 +22,7 @@
     b2Body* spiderAnchor;
     b2Body *currentRollingAnchor;
     b2Vec2 prevTouch;
+    BOOL swiping;
 }
 @property (nonatomic, retain) NSMutableArray *joints;
 @property (nonatomic, retain) NSMutableArray *anchors;

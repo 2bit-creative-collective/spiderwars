@@ -135,12 +135,40 @@
         d->maxLength = originalDist.Length() + dist.Length();
 
         
-        world->CreateJoint(d);   
+        self->ropeJoint = world->CreateJoint(d);   
     }
     
     return self;
 }
 
+
+-(BOOL) checkCutP1:(b2Vec2 *)p1 P2:(b2Vec2 *)p2
+{
+    b2RayCastInput input;
+    input.p1 = *p1;
+    input.p2 = *p2;
+    input.maxFraction = 1;
+    for (NSValue *body in [self bodies])
+    {
+        b2Body *m = (b2Body *) [body pointerValue];
+        for (b2Fixture* f = m->GetFixtureList(); f; f = f->GetNext()) 
+        {
+            b2RayCastOutput output;
+            if (f->RayCast(&output, input, 0))
+            {
+                [[self bodies] removeObject:body];
+                world->DestroyBody(m);
+                world->DestroyJoint(self->ropeJoint);
+                
+                return TRUE;
+            }
+                
+        }
+        
+    }
+    
+    return FALSE;
+}
 
 
 -(b2Vec2) midpointBetweenBody:(b2Vec2)bodyA andBody:(b2Vec2)bodyB

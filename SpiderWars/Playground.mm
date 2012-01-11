@@ -55,40 +55,46 @@
 
     prevTouch = t;
     
+    swiping = FALSE;
 }
 
 - (void)ccTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    if (currentRollingAnchor == Nil)
-        return;
+    swiping = TRUE;
+    
     
     UITouch *touch = [touches anyObject];
     b2Vec2 currentV = [self getPointFromTouch:touch];
     
-    NSLog(@"-----");
-    float oppositeOverAdjacent = (currentRollingAnchor->GetPosition().y - prevTouch.y) / (currentRollingAnchor->GetPosition().x - prevTouch.x);
-    
-    NSLog(@" %f", oppositeOverAdjacent);
-
-    float angle = atan(oppositeOverAdjacent);
-    if (prevTouch.x < currentRollingAnchor->GetPosition().x)
+    for (MultiNodeRevoluteRope* n in [self webs])
     {
-        angle = M_PI + angle;
+        [n checkCutP1:&prevTouch P2:&currentV];
     }
-    oppositeOverAdjacent = (currentRollingAnchor->GetPosition().y - currentV.y) / 
-    (currentRollingAnchor->GetPosition().x - currentV.x);
     
-    float angle1 = atan(oppositeOverAdjacent);
-    if (currentV.x < currentRollingAnchor->GetPosition().x)
-    {
-        angle1 = M_PI + angle1;
-    }
-    NSLog(@"current Angle %f", currentRollingAnchor->GetAngle());
-    
-    currentRollingAnchor->SetTransform(currentRollingAnchor->GetPosition(), currentRollingAnchor->GetAngle() + (angle1 -  angle));
-    
-    NSLog(@" %f", oppositeOverAdjacent);
-    NSLog(@"angle1 %f angle %f", angle1, angle);
+//    NSLog(@"-----");
+//    float oppositeOverAdjacent = (currentRollingAnchor->GetPosition().y - prevTouch.y) / (currentRollingAnchor->GetPosition().x - prevTouch.x);
+//    
+//    NSLog(@" %f", oppositeOverAdjacent);
+//
+//    float angle = atan(oppositeOverAdjacent);
+//    if (prevTouch.x < currentRollingAnchor->GetPosition().x)
+//    {
+//        angle = M_PI + angle;
+//    }
+//    oppositeOverAdjacent = (currentRollingAnchor->GetPosition().y - currentV.y) / 
+//    (currentRollingAnchor->GetPosition().x - currentV.x);
+//    
+//    float angle1 = atan(oppositeOverAdjacent);
+//    if (currentV.x < currentRollingAnchor->GetPosition().x)
+//    {
+//        angle1 = M_PI + angle1;
+//    }
+//    NSLog(@"current Angle %f", currentRollingAnchor->GetAngle());
+//    
+//    currentRollingAnchor->SetTransform(currentRollingAnchor->GetPosition(), currentRollingAnchor->GetAngle() + (angle1 -  angle));
+//    
+//    NSLog(@" %f", oppositeOverAdjacent);
+//    NSLog(@"angle1 %f angle %f", angle1, angle);
     
     prevTouch = currentV;
     
@@ -98,6 +104,12 @@
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
 
+    if (swiping)
+    {
+        swiping = FALSE;
+        return;
+    }
+        
     UITouch *touch = [touches anyObject];
     b2Vec2 t =  [self getPointFromTouch:touch];
     [self createWebToX: t.x andY:t.y];

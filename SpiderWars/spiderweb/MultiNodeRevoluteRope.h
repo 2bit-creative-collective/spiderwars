@@ -15,6 +15,7 @@
     @private
     b2World* world;
     NSMutableArray* anchors;
+    b2Joint *ropeJoint;
     
 }
 
@@ -29,6 +30,8 @@
 -(b2Body *) createAnchorAt: (const b2Vec2&) anchorPoint withHeight:(b2Vec2* ) h andAngle:(float) angle remainingMass:(float) mass;
 
 -(b2Vec2) midpointBetweenBody:(b2Vec2)bodyA andBody:(b2Vec2)bodyB;
+
+-(BOOL) checkCutP1:(b2Vec2 *)p1 P2:(b2Vec2 *)p2; 
  
 
 
