@@ -15,7 +15,5 @@
 
 -(id) initWithAnchorAt:(const b2Vec2&)anchorPoint andAnchoredBody:(b2Body *)body inWorld:(b2World *) myWorld;
 
-@property (nonatomic) b2Joint *joint;
-
 
 @end

@@ -17,7 +17,7 @@
     b2Body *webAnchor;
 }
 
-@property (nonatomic)b2Joint * joint;
+
 
 +(id) createWebWithAnchorAt:(const b2Vec2&)anchorPoint andAnchoredBody:(b2Body *)body inWorld:(b2World *) world;
 

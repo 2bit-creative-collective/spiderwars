@@ -10,7 +10,7 @@
 
 @implementation SpiderWebRope
 
-@synthesize joint;
+
 
 +(id) createWebWithAnchorAt:(const b2Vec2&)anchorPoint andAnchoredBody:(b2Body *)body inWorld:(b2World *) world
 {
@@ -34,7 +34,7 @@
 
         jd->maxLength= (body->GetPosition() - webAnchor->GetPosition()).Length(); //define max length of joint = current distance between bodies
         
-        joint = world->CreateJoint(jd);
+
         
     }
     return self;
@@ -47,7 +47,6 @@
     
     
 	spiderAnchorDef.position = anchorPoint;
-    
     
     anchor =  world->CreateBody(&spiderAnchorDef);
     
@@ -62,21 +61,13 @@
 	fixtureDef1.density = 1.0f;
 	fixtureDef1.friction = 0.0f;
 	anchor->CreateFixture(&fixtureDef1);
-    
-    
-    
-    
-    
-    
-	return anchor;
+    return anchor;
     
 }
 
 -(void) dealloc
 {
-    world->DestroyJoint(joint);
     world->DestroyBody(webAnchor);
-    joint = NULL;
     webAnchor = NULL;
     [super dealloc];
 }

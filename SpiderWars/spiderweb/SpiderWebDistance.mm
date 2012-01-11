@@ -10,7 +10,7 @@
 
 
 @implementation SpiderWebDistance 
-@synthesize joint;
+
 
 +(id) createWebWithAnchorAt:(const b2Vec2&)anchorPoint andAnchoredBody:(b2Body *)body inWorld:(b2World *) world
 {
@@ -38,7 +38,7 @@
         jd->frequencyHz = 1.0f;
         jd->dampingRatio = 4.0f;
         
-        joint = self->world->CreateJoint(jd);
+        self->world->CreateJoint(jd);
         
     }
     return self;
@@ -76,7 +76,7 @@
 {
 //    self->world->DestroyJoint(joint);
     self->world->DestroyBody(webAnchor);
-    joint = NULL;
+
     self->webAnchor = NULL;
     [super dealloc];
 }

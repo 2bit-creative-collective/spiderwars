@@ -27,6 +27,7 @@
 @property (nonatomic, retain) NSMutableArray *anchors;
 @property (nonatomic, retain) NSMutableArray *webs;
 
+
 -(void) defineSpider;
 -(void) setupBox2DWorld;
 -(void) defineStickyBlocks;

@@ -10,6 +10,7 @@
 #import "SpiderWebDistance.h"
 #import "SpiderWebRope.h"
 #import "MultiNodeDistanceRope.h"
+#import "MultiNodeRevoluteRope.h"
 
 //Pixel to metres ratio. Box2D uses metres as the unit for measurement.
 //This ratio defines how many pixels correspond to 1 Box2D "metre"
@@ -25,6 +26,7 @@
 @synthesize joints;
 @synthesize anchors;
 @synthesize webs;
+
 
 - (id)init {
     self = [super init];
@@ -51,18 +53,7 @@
     UITouch *touch = [touches anyObject];
     b2Vec2 t =  [self getPointFromTouch:touch];
 
-//    for (NSValue* b in [self anchors]) 
-//    {
-//        b2Body *temp = (b2Body *)[b pointerValue];
-//        if (temp->GetFixtureList()->TestPoint(t))
-//        {
-//            currentRollingAnchor = temp;
-//            break;
-//        }
-//    }
-
     prevTouch = t;
-    
     
 }
 
@@ -101,18 +92,17 @@
     
     prevTouch = currentV;
     
-    
-    //need to change the length of the joint!!! 
+
 }
 
 - (void)ccTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
 
-        UITouch *touch = [touches anyObject];
-        b2Vec2 t =  [self getPointFromTouch:touch];
-        [self createWebToX: t.x andY:t.y];
-        //in your touchesEnded event, you would want to see if you touched
-        //down and then up inside the same place, and do your logic there.
+    UITouch *touch = [touches anyObject];
+    b2Vec2 t =  [self getPointFromTouch:touch];
+    [self createWebToX: t.x andY:t.y];
+    //in your touchesEnded event, you would want to see if you touched
+    //down and then up inside the same place, and do your logic there.
     currentRollingAnchor = Nil;
 }
 
@@ -140,24 +130,12 @@
 	// Define the dynamic body fixture.
 	b2FixtureDef fixtureDef;
 	fixtureDef.shape = &circleAnchor;	
-	fixtureDef.density = 2.0f;
+	fixtureDef.density = 30.0f;
 	fixtureDef.friction = 0.0f;
+    fixtureDef.filter.groupIndex = -8;
+    
 	spider->CreateFixture(&fixtureDef);
-    spider->SetLinearDamping(0.1f);
-    
-    
-    //    // Define another box shape for our dynamic body.
-//	b2PolygonShape dynamicBox2;
-//	dynamicBox2.SetAsBox(.5f, .5f, b2Vec2(0.0f, -4.0f), 0.0f);
-//	// Define the dynamic body fixture.
-//	b2FixtureDef fixtureDef2;
-//	fixtureDef2.shape = &dynamicBox2;	
-//	fixtureDef2.density = 1.0f;
-//	fixtureDef2.friction = 0.0f;
-//    
-//	spider->CreateFixture(&fixtureDef2);
-    
-    
+    spider->SetLinearDamping(0.2f);
     
     
     //anchor
@@ -171,12 +149,6 @@
                                                                    selector:@selector(resetPlayground)];
     
     
-
-    
-    
-    
-
-    
     
     // Create a menu and add your menu items to it
     CCMenu * myMenu = [CCMenu menuWithItems:swingSpiderButton, nil];
@@ -188,6 +160,7 @@
     [self addChild:myMenu];
 
 
+    
     
     
     
@@ -215,11 +188,23 @@
 	ground->CreateFixture(&boxDef);
     
     
+    groundBodyDef.position.Set(7, 16);
+    ground = world->CreateBody(&groundBodyDef);
+    b2Vec2 vertices[4];
+    vertices[0] = b2Vec2(0, -5);
+    vertices[1] = b2Vec2(1, -5);
+    vertices[2] = b2Vec2(1, 0);
+    vertices[3] = b2Vec2(0, 0);
+    
+    box.Set(vertices, sizeof(vertices) / sizeof(vertices[0]) );
+    ground = world->CreateBody(&groundBodyDef);
+    ground->CreateFixture(&boxDef);
+    
 }
 
 -(void) resetPlayground
 {
-    spider->SetTransform(b2Vec2(ptm(200), ptm(500)), 0.0f);
+    spider->SetTransform(b2Vec2(ptm(400), ptm(500)), 0.0f);
     
     CGSize screenSize = [CCDirector sharedDirector].winSize;
     
@@ -230,7 +215,7 @@
         [[self webs] removeLastObject];
     }
 
-    [self createWebToX:ptm(touch.x) andY:touch.y];
+    [self createWebToX:touch.x andY:touch.y];
 }
 
 -(b2Vec2)getPointFromTouch:(UITouch *)touch
@@ -248,60 +233,20 @@
 -(void) createWebToX: (float32)x andY:(float32)y
 {
 
-//    if ([[self joints] count] == 2)
-//    {
-//        world->DestroyJoint((b2Joint *)[[[self joints] lastObject] pointerValue]);
-//        [[self joints] removeLastObject];
-//        world->DestroyBody((b2Body *)[[[self anchors] lastObject] pointerValue]);
-//        
-//        [[self anchors] removeLastObject];
-//        
-//    }
     if ([[self webs] count] == 2)
     {
         [[self webs] removeLastObject];
     }
         
     
-    
-//    double angle = 0.0f;
-//    @try {
-//        float oppositeOverAdjacent = (spider->GetPosition().x - spiderAnchor->GetPosition().x) / 
-//        -(spider->GetPosition().y - spiderAnchor->GetPosition().y);
-//        
-//        angle = atan(oppositeOverAdjacent);
-//        
-//        
-//    }
-//    @catch (NSException *exception) {
-//        angle = 0.0f;
-//        NSLog(@"crap ");
-//    }
-    
-    
     spider->SetFixedRotation(true);
     
-    id<SpiderWeb> web = [MultiNodeDistanceRope createWebWithAnchorAt:b2Vec2(x, y) andAnchoredBody:spider inWorld:world];
+    id<SpiderWeb> web = [MultiNodeRevoluteRope createWebWithAnchorAt:b2Vec2(x, y) andAnchoredBody:spider inWorld:world];
     
        
-//    [[self joints] insertObject:[NSValue valueWithPointer:web] atIndex:0];
-//    [[self anchors] insertObject:[NSValue valueWithPointer:anchor] atIndex:0];
-
     [[self webs] insertObject:web atIndex:0];
     
-//    web->SetFrequency(20.0f);
-//    web->SetDampingRatio(1.0f);
-    
-    
-//    web->SetDampingRatio(10.0f);
-    
-//    b2RevoluteJointDef *fjd = new b2RevoluteJointDef();
-//    fjd->Initialize(spiderAnchor, spider, spiderAnchor->GetWorldCenter());
-//    fjd->enableMotor = true;
-//    fjd->motorSpeed = 0.0f;
-//    fjd->maxMotorTorque = 1.0f;
-//    world->CreateJoint(fjd);
-    
+
     
 }
 
@@ -323,13 +268,13 @@
 {
     // Define the gravity vector.
     b2Vec2 gravity;
-    gravity.Set(0.0f, -50.8f);
+    gravity.Set(0.0f, -20.8f);
     
     
     // Construct a world object, which will hold and simulate the rigid bodies.
     world = new b2World(gravity);
     
-    world->SetContinuousPhysics(false);
+    world->SetAllowSleeping(true);
     
     // Debug Draw functions
     m_debugDraw = new GLESDebugDraw( PTM_RATIO );
@@ -387,9 +332,20 @@
 	//You need to make an informed choice, the following URL is useful
 	//http://gafferongames.com/game-physics/fix-your-timestep/
 	
-	int32 velocityIterations = 8;
-	int32 positionIterations = 1;
+	int32 velocityIterations = 15;
+	int32 positionIterations = 10;
+//	int32 velocityIterations = 10;
+//	int32 positionIterations = 8;
 	
+
+    for(MultiNodeRevoluteRope *web in [self webs])
+    {    
+        for(NSValue *v in [web bodies])
+        {
+            b2Body *b = (b2Body *)[v pointerValue];
+            b->ApplyForceToCenter(b2Vec2(0, 20.8f * 0.95f));
+        }
+    }       
 	// Instruct the world to perform a single step of simulation. It is
 	// generally best to keep the time step and iterations fixed.
 	world->Step(dt, velocityIterations, positionIterations);

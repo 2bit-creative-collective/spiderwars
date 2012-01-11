@@ -10,7 +10,7 @@
 
 @implementation MultiNodeDistanceRope
 
-@synthesize joint;
+
 
 +(id) createWebWithAnchorAt:(const b2Vec2&)anchorPoint andAnchoredBody:(b2Body *)body inWorld:(b2World *) world
 {
@@ -32,6 +32,7 @@
         b2Vec2 bodyPosition = body->GetPosition();
         
         b2Body* webAnchor = [self createAnchorAt:anchorPoint];
+        b2Body* staticAnchor = webAnchor;
         [self->bodies addObject:[NSValue valueWithPointer:webAnchor]];
         
         
@@ -39,26 +40,13 @@
         
         b2Vec2 originalDist = anchorPoint - bodyPosition;
         
-        
-
-        
-        while (dist.Length() > 2.0f)
+        while (dist.Length() > 0.8f)
         {
             dist = [self midpointBetweenBody:anchorPoint andBody:(anchorPoint - dist)];
         }
-        //dist *= 2;
-        
 
-        
-        
-        
-        
         
         b2Vec2 nd = originalDist - dist;
-        
-        
-
-        
 
         while (b2Dot(originalDist, nd) >= 0.0f)
         {
@@ -69,10 +57,9 @@
 
         }
         
+        float mass = body->GetMass() / [self->anchors count]; 
             
         
-       
-    
         b2Body* midWebAnchor;
         
         for (NSValue* v in self->anchors)
@@ -80,11 +67,11 @@
             b2Vec2 aa = *(b2Vec2 *)[v pointerValue];
         
             
-            midWebAnchor = [self createAnchorAt:aa ofType:b2_dynamicBody];
+            midWebAnchor = [self createAnchorAt:aa ofType:b2_dynamicBody remainingMass:mass];
         
             [self->bodies addObject:[NSValue valueWithPointer:midWebAnchor]];
             
-            midWebAnchor->SetLinearDamping(0.1f);
+            //midWebAnchor->SetLinearDamping(0.1f);
         
             
             b2DistanceJointDef *jd = new b2DistanceJointDef();
@@ -100,15 +87,21 @@
         
         b2DistanceJointDef *jd = new b2DistanceJointDef();
         jd->Initialize(midWebAnchor, body, midWebAnchor->GetWorldCenter(), 
-                       body->GetWorldPoint(b2Vec2(body->GetLocalCenter().x, body->GetLocalCenter().y + .5f)));
+                       body->GetWorldCenter());
 //        jd->frequencyHz = 30.0f;
 //        jd->dampingRatio = 1.0f;
         
         world->CreateJoint(jd);
+        b2RopeJointDef *d = new b2RopeJointDef();
+        d->bodyA = staticAnchor;
+        d->bodyB = body;
+        d->localAnchorA = staticAnchor->GetLocalCenter();
+        d->localAnchorB = body->GetLocalCenter();
+        d->maxLength = originalDist.Length() + dist.Length();
+
         
-        
-        
-        
+        world->CreateJoint(d);
+                
     }
      
     return self;
@@ -130,10 +123,10 @@
 
 -(b2Body *) createAnchorAt: (const b2Vec2&) anchorPoint
 {
-    return [self createAnchorAt:anchorPoint ofType:b2_staticBody];
+    return [self createAnchorAt:anchorPoint ofType:b2_staticBody remainingMass:1];
 }
 
--(b2Body *) createAnchorAt: (const b2Vec2&) anchorPoint ofType:(b2BodyType) type
+-(b2Body *) createAnchorAt: (const b2Vec2&) anchorPoint ofType:(b2BodyType) type remainingMass:(float) mass
 {
     b2Body *anchor;
     b2BodyDef spiderAnchorDef;
@@ -147,13 +140,18 @@
     // Define another box shape for our dynamic body.
 	b2CircleShape circleAnchor;
     circleAnchor.m_p = b2Vec2(0,0);
-    circleAnchor.m_radius = 0.2f;
+    circleAnchor.m_radius = 0.1f;
+    
+    float area = M_PI * circleAnchor.m_radius * circleAnchor.m_radius;
+    
+    
 	
 	// Define the dynamic body fixture.
 	b2FixtureDef fixtureDef1;
 	fixtureDef1.shape = &circleAnchor;	
-	fixtureDef1.density = 3.0f;
+	fixtureDef1.density = mass / area;
 	fixtureDef1.friction = 0.0f;
+    fixtureDef1.filter.groupIndex = -8;
 	anchor->CreateFixture(&fixtureDef1);
     
     
@@ -170,10 +168,7 @@
     }
     for (NSValue *v in self->bodies)
         world->DestroyBody((b2Body*)[v pointerValue]);
-    
-    
-    joint = NULL;
-    //webAnchor = NULL;
+ 
     self->anchors = Nil;
     [super dealloc];
 }
