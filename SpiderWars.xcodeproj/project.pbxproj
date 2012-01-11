@@ -183,6 +183,7 @@
 		9493FC0914B1050E0097C838 /* MultiNodeDistanceRope.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9493FC0814B1050E0097C838 /* MultiNodeDistanceRope.mm */; };
 		94A08F2914AC7EB00052D560 /* SpiderWebRope.mm in Sources */ = {isa = PBXBuildFile; fileRef = 94A08F2814AC7EB00052D560 /* SpiderWebRope.mm */; };
 		94A08F2C14AD19AB0052D560 /* SpiderWebDistance.mm in Sources */ = {isa = PBXBuildFile; fileRef = 94A08F2B14AD19AB0052D560 /* SpiderWebDistance.mm */; };
+		94C7D29514B5BA8800554A52 /* MultiNodeRevoluteRope.mm in Sources */ = {isa = PBXBuildFile; fileRef = 94C7D29414B5BA8800554A52 /* MultiNodeRevoluteRope.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -541,6 +542,8 @@
 		94A08F2814AC7EB00052D560 /* SpiderWebRope.mm */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = SpiderWebRope.mm; path = spiderweb/SpiderWebRope.mm; sourceTree = "<group>"; };
 		94A08F2A14AD19AB0052D560 /* SpiderWebDistance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SpiderWebDistance.h; path = spiderweb/SpiderWebDistance.h; sourceTree = "<group>"; };
 		94A08F2B14AD19AB0052D560 /* SpiderWebDistance.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = SpiderWebDistance.mm; path = spiderweb/SpiderWebDistance.mm; sourceTree = "<group>"; };
+		94C7D29314B5BA8800554A52 /* MultiNodeRevoluteRope.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = MultiNodeRevoluteRope.h; path = spiderweb/MultiNodeRevoluteRope.h; sourceTree = "<group>"; };
+		94C7D29414B5BA8800554A52 /* MultiNodeRevoluteRope.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = MultiNodeRevoluteRope.mm; path = spiderweb/MultiNodeRevoluteRope.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1163,6 +1166,8 @@
 				94A08F2B14AD19AB0052D560 /* SpiderWebDistance.mm */,
 				9493FC0714B1050E0097C838 /* MultiNodeDistanceRope.h */,
 				9493FC0814B1050E0097C838 /* MultiNodeDistanceRope.mm */,
+				94C7D29314B5BA8800554A52 /* MultiNodeRevoluteRope.h */,
+				94C7D29414B5BA8800554A52 /* MultiNodeRevoluteRope.mm */,
 			);
 			name = spiderweb;
 			sourceTree = "<group>";
@@ -1432,6 +1437,7 @@
 				94A08F2914AC7EB00052D560 /* SpiderWebRope.mm in Sources */,
 				94A08F2C14AD19AB0052D560 /* SpiderWebDistance.mm in Sources */,
 				9493FC0914B1050E0097C838 /* MultiNodeDistanceRope.mm in Sources */,
+				94C7D29514B5BA8800554A52 /* MultiNodeRevoluteRope.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
