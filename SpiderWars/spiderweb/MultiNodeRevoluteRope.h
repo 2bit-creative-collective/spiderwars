@@ -11,15 +11,9 @@
 #include "Box2D.h"
 
 @interface MultiNodeRevoluteRope : NSObject <SpiderWeb>
-{
-    @private
-    b2World* world;
-    NSMutableArray* anchors;
-    b2Joint *ropeJoint;
-    
-}
 
-@property (nonatomic, retain)NSMutableArray* bodies;
+@property (nonatomic, retain)NSMutableArray *bodies;
+
 +(id) createWebWithAnchorAt:(const b2Vec2&)anchorPoint andAnchoredBody:(b2Body *)body inWorld:(b2World *) world;
 
 -(id) initWithAnchorAt:(const b2Vec2&)anchorPoint andAnchoredBody:(b2Body *)body inWorld:(b2World *) myWorld;

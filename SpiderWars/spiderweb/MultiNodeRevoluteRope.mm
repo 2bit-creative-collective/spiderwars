@@ -8,9 +8,20 @@
 
 #import "MultiNodeRevoluteRope.h"
 
+@interface MultiNodeRevoluteRope ()
+
+@property (nonatomic, assign) b2World *world;
+@property (nonatomic, retain) NSMutableArray *anchors;
+@property (nonatomic, assign)b2Joint *ropeJoint;
+
+@end
+
 @implementation MultiNodeRevoluteRope
 
-@synthesize bodies;
+@synthesize bodies = bodies_;
+@synthesize world = world_;
+@synthesize anchors = anchors_;
+@synthesize ropeJoint = ropeJoint_;
 
 +(id) createWebWithAnchorAt:(const b2Vec2&)anchorPoint andAnchoredBody:(b2Body *)body inWorld:(b2World *) world
 {
@@ -24,10 +35,9 @@
     self = [super init];
     if (self) 
     {
-        self->anchors = [[NSMutableArray array] retain];
-        [self setBodies:[NSMutableArray array]];
-        self->world = myWorld;
-        
+        self.anchors = [NSMutableArray array];
+        self.bodies = [NSMutableArray array];
+        self.world = myWorld;
         b2Vec2 bodyPosition = body->GetPosition();
         
         
@@ -63,25 +73,26 @@
         {
             b2Vec2* aa = new b2Vec2(bodyPosition + nd);
             
-            
-            [self->anchors addObject:[NSValue valueWithPointer:aa]];
+            [self.anchors addObject:[NSValue valueWithPointer:aa]];
             nd -= dist;
-            
         }
         
-        b2Vec2 lastPoint = *(b2Vec2 *)[[self->anchors lastObject] pointerValue];
+        if (self.anchors.count > 0)
+        {
+            b2Vec2 lastPoint = *((b2Vec2 *)[[self.anchors lastObject] pointerValue]);
+            
+            lastPoint = lastPoint - bodyPosition;
+            if (b2Dot(originalDist, lastPoint) < dist.Length()/2)
+                [self.anchors removeLastObject];
+        }
         
-        lastPoint = lastPoint - bodyPosition;
-        if (b2Dot(originalDist, lastPoint) < dist.Length()/2)
-            [self->anchors removeLastObject];
-        
-        b2Body* webAnchor = [self createAnchorAt:anchorPoint];
-        b2Body* staticAnchor = webAnchor;
-        [self->bodies addObject:[NSValue valueWithPointer:webAnchor]];
-        [self->anchors insertObject:[NSValue valueWithPointer:&webAnchor->GetWorldCenter()] atIndex:0];
+        b2Body *webAnchor = [self createAnchorAt:anchorPoint];
+        b2Body *staticAnchor = webAnchor;
+        [self.bodies addObject:[NSValue valueWithPointer:webAnchor]];
+        [self.anchors insertObject:[NSValue valueWithPointer:&webAnchor->GetWorldCenter()] atIndex:0];
 
                 
-        int bodycount = [self->anchors count];
+        int bodycount = [self.anchors count];
 
         float mass = body->GetMass() / (bodycount-1);
 
@@ -92,7 +103,7 @@
         
         int i = 0;
 
-        for (NSValue* v in self->anchors)
+        for (NSValue* v in self.anchors)
         {
             b2Vec2 aa = *(b2Vec2 *)[v pointerValue];
         
@@ -115,7 +126,7 @@
             }
 
             
-            world->CreateJoint(jd);
+            self.world->CreateJoint(jd);
             webAnchor = midWebAnchor;
             i++;
         }
@@ -124,7 +135,7 @@
         b2RevoluteJointDef *jd = new b2RevoluteJointDef();
         jd->Initialize(midWebAnchor, body, body->GetWorldCenter());
         jd->collideConnected  =false;
-        world->CreateJoint(jd);
+        self.world->CreateJoint(jd);
         
         
         b2RopeJointDef *d = new b2RopeJointDef();
@@ -135,7 +146,7 @@
         d->maxLength = originalDist.Length() + dist.Length();
 
         
-        self->ropeJoint = world->CreateJoint(d);   
+        self.ropeJoint = self.world->CreateJoint(d);   
     }
     
     return self;
@@ -157,8 +168,8 @@
             if (f->RayCast(&output, input, 0))
             {
                 [[self bodies] removeObject:body];
-                world->DestroyBody(m);
-                world->DestroyJoint(self->ropeJoint);
+                self.world->DestroyBody(m);
+                self.world->DestroyJoint(self.ropeJoint);
                 
                 return TRUE;
             }
@@ -192,7 +203,7 @@
 	spiderAnchorDef.position = anchorPoint;
     
     
-    anchor =  world->CreateBody(&spiderAnchorDef);
+    anchor = self.world->CreateBody(&spiderAnchorDef);
     
 	b2PolygonShape box;
 
@@ -222,7 +233,7 @@
 	spiderAnchorDef.position = anchorPoint - halfHeight;
     spiderAnchorDef.angle = angle;
     
-    anchor =  world->CreateBody(&spiderAnchorDef);
+    anchor =  self.world->CreateBody(&spiderAnchorDef);
     
     
 	b2PolygonShape box;
@@ -258,15 +269,21 @@
 
 -(void) dealloc
 {
-    
-    for (NSValue *v in self->anchors)
+    for (NSValue *v in self.anchors)
     {
-        delete (b2Vec2*)[v pointerValue];
+        b2Vec2* vp = (b2Vec2*)[v pointerValue];
+        delete vp;
     }
-    for (NSValue *v in [self bodies])
-        world->DestroyBody((b2Body*)[v pointerValue]);
     
-    self->anchors = Nil;
+    for (NSValue *v in [self bodies])
+    {
+        b2Body* vp = (b2Body*)[v pointerValue];
+        self.world->DestroyBody(vp);
+    }
+    
+    self.anchors = nil;
+    self.bodies = nil;
+    
     [super dealloc];
 }
 
