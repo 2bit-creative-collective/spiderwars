@@ -89,7 +89,7 @@
         b2Body *webAnchor = [self createAnchorAt:anchorPoint];
         b2Body *staticAnchor = webAnchor;
         [self.bodies addObject:[NSValue valueWithPointer:webAnchor]];
-        [self.anchors insertObject:[NSValue valueWithPointer:&webAnchor->GetWorldCenter()] atIndex:0];
+        [self.anchors insertObject:[NSValue valueWithPointer:new b2Vec2(webAnchor->GetWorldCenter())] atIndex:0];
 
                 
         int bodycount = [self.anchors count];
