@@ -41,6 +41,10 @@
 
 - (void) applicationDidFinishLaunching:(UIApplication*)application
 {
+    // TODO: You MUST remove TestFlightSDK before app store submission
+    NSString *tfapikey = @"bf7a249b08cdcba36d377fbb8b98beb8_NDI3NDIyMDExLTExLTI1IDA4OjMwOjI0Ljg2NTIyMA";
+    [TestFlight takeOff:tfapikey];
+    
 	// Init the window
 	window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	
